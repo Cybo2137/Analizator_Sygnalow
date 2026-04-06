@@ -1,0 +1,38 @@
+#include <SPI.h>
+#include <SoftwareSerial.h>
+
+// Przenieslismy UART na pin 7, zeby zwolnic pin 11 dla SPI!
+SoftwareSerial mojUART(10, 7); 
+
+const int PIN_CS = 10;
+
+void setup() {
+  pinMode(PIN_CS, OUTPUT);
+  digitalWrite(PIN_CS, HIGH); // Stan wysoki = urzadzenie odlaczone
+
+  SPI.begin();
+  mojUART.begin(9600);
+}
+
+void loop() {
+  // --- WYSYLANIE SPI ---
+  // Rozpoczynamy transakcje SPI (ustawiamy predkosc na bezpieczne 100 kHz)
+  SPI.beginTransaction(SPISettings(100000, MSBFIRST, SPI_MODE0));
+  
+  digitalWrite(PIN_CS, LOW); // "Hej ESP32, sluchaj teraz!"
+  
+  // Wysylamy 3 bajty danych
+  SPI.transfer('S');
+  SPI.transfer('P');
+  SPI.transfer('I');
+  
+  digitalWrite(PIN_CS, HIGH); // "Koniec transmisji"
+  SPI.endTransaction();
+
+  // --- WYSYLANIE UART (Dla potrzymania reszty kombajnu) ---
+  if (millis() % 1000 < 20) {
+    mojUART.println("Tajne Haslo: ESP32 Rzadzi!");
+  }
+
+  delay(1000); // Wysylamy paczke co sekunde
+}

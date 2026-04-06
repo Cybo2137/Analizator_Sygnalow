@@ -1,0 +1,19 @@
+#include <Wire.h>
+
+void setup() {
+  // Uruchamiamy magistrale I2C jako Master (brak adresu w nawiasie)
+  Wire.begin(); 
+}
+
+void loop() {
+  // Rozpoczynamy transmisje do urzadzenia "Slave" o adresie 8
+  Wire.beginTransmission(8); 
+  
+  // Wysylamy tekst bajt po bajcie
+  Wire.write("Hej ESP32, tu I2C!"); 
+  
+  // Konczymy i fizycznie wysylamy paczke na kable
+  Wire.endTransmission(); 
+  
+  delay(1000); 
+}
